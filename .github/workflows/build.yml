@@ -5,7 +5,7 @@ name: Build & Push to ECR
 # Controls when the action will run. 
 on:
   pull_request:
-    branches: [ sandbox ]
+    branches: [ sandbox, production ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
