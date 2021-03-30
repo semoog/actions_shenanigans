@@ -29,7 +29,7 @@ jobs:
       - name: Get latest tag
         run: |
           scp circleci@${{ secrets.BASTION_IP }}:/home/circleci/latest_build /home/runner/latest_build
-          cat /home/circleci/latest_build
+          cat /home/runner/latest_build
       # Runs the "deploy" command
       - name: Deploy air quotes
         run: |
