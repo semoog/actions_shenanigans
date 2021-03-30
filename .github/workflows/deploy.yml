@@ -20,10 +20,14 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.1
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
       - name: accept bastion key
         run: |
           ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          ssh circleci@${{ secrets.BASTION_IP }} "echo \"Hello world\""
+          ssh circleci@${{ secrets.BASTION_IP }} "echo \"Hello world, deployed to ${{ steps.extract_branch.outputs.branch }}!\""
