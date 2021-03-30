@@ -20,7 +20,10 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.1
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: accept bastion key
+        run: |
+          ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
-          ssh -o "StrictHostKeyChecking no" -J circleci@${{ secrets.BASTION_IP }} circleci@${{ secrets.SALT_MASTER_IP }} "sudo salt salt-master-1* state.apply kubernetes.deploy queue=True pillar='{\"app_name\": \"calculators\"}'"
+          ssh circleci@${{ secrets.BASTION_IP }} "echo \"Hello world\""
