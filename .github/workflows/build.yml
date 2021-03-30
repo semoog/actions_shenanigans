@@ -18,7 +18,7 @@ jobs:
       # Retrieve the short SHA for the tag
       - name: Extract short sha
         shell: bash
-        run: echo "##[set-output name=sha_short;]$(echo ${git rev-parse --short HEAD})"
+        run: echo "##[set-output name=sha_short;]$(echo $(git rev-parse --short HEAD))"
         id: vars
       # Runs the build
       - name: Build and push Docker image
