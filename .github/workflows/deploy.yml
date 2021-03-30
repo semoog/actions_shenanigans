@@ -29,7 +29,7 @@ jobs:
       - name: Get the latest tag
         shell: bash
         run: |
-          ssh circleci@${{ secrets.BASTION_IP }} "echo \"##[set-output name=latest_build;]$(echo $(cat /tmp/latest_build))\""
+          ssh circleci@${{ secrets.BASTION_IP }} "echo \"##[set-output name=latest_build;]$(echo $(cat ~/latest_build))\""
         id: tags
       # Runs the "deploy" command
       - name: Deploy air quotes
