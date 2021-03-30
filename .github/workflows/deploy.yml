@@ -29,4 +29,4 @@ jobs:
       # Runs the "deploy" command
       - name: Deploy air quotes
         run: |
-          ssh circleci@${{ secrets.BASTION_IP }} "TAG=`cat /home/circleci/latest_build` && echo \"Hello world, deployed tag $TAG to ${{ steps.vars.outputs.branch }}!\""
+          ssh circleci@${{ secrets.BASTION_IP }} "TAG=\`cat /home/circleci/latest_build\` && echo \"Hello world, deployed tag $TAG to ${{ steps.vars.outputs.branch }}!\""
