@@ -26,7 +26,10 @@ jobs:
         run: | 
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: vars
+      - name: Get latest tag
+        run: |
+          scp circleci@${{ secrets.BASTION_IP }}:/home/circleci/latest_build /home/runner/latest_build
       # Runs the "deploy" command
       - name: Deploy air quotes
         run: |
-          ssh circleci@${{ secrets.BASTION_IP }} "TAG=$(</home/circleci/latest_build) && echo \"Hello world, deployed tag $TAG to ${{ steps.vars.outputs.branch }}!\""
+          ssh circleci@${{ secrets.BASTION_IP }} "TAG=$(</home/runner/latest_build) && echo \"Hello world, deployed tag $TAG to ${{ steps.vars.outputs.branch }}!\""
