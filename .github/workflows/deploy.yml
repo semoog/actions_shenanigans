@@ -18,6 +18,9 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.1
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: accept bastion key
+        run: |
+          ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
       - name: Extract some variables
         shell: bash
         run: | 
@@ -25,9 +28,6 @@ jobs:
           echo "##[set-output name=sha_short;]$(echo $(git rev-parse --short HEAD))"
           ssh circleci@${{ secrets.BASTION_IP }} "echo \"##[set-output name=latest_build;]$(echo $(cat /tmp/latest_build))\""
         id: vars
-      - name: accept bastion key
-        run: |
-          ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
       # Runs the "deploy" command
       - name: Deploy air quotes
         run: |
