@@ -16,13 +16,11 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.1
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
-      - name: Extract branch name
+      - name: Extract some variables
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: vars
-      - name: Extract short sha
-        shell: bash
-        run: echo "##[set-output name=sha_short;]$(echo $(git rev-parse --short HEAD))"
+        run: | 
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "##[set-output name=sha_short;]$(echo $(git rev-parse --short HEAD))"
         id: vars
       - name: accept bastion key
         run: |
