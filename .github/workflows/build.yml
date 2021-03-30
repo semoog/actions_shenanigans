@@ -4,7 +4,7 @@ name: Build & Push to ECR
 # Controls when the action will run. 
 on:
   pull_request:
-    branches: [ sandbox, production ]
+    branches: [ sandbox ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -15,6 +15,12 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.5.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: accept bastion key
+        run: |
+          ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
       # Retrieve the short SHA for the tag
       - name: Extract short sha
         shell: bash
@@ -66,6 +72,10 @@ jobs:
           # ssh: # optional
           # GitHub Token used to authenticate against a repository for Git context
           # github-token: # optional, default is ${{ github.token }}
+      # Set build tag on "salt"
+      - name: Set image tag master file
+        run: |
+          ssh circleci@${{ secrets.BASTION_IP }} "echo ${{ steps.vars.outputs.sha_short }} >> /tmp/latest_build"
       # Runs a set of commands using the runners shell
       - name: Print out results
         run: |

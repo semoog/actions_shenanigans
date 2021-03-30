@@ -23,6 +23,7 @@ jobs:
         run: | 
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
           echo "##[set-output name=sha_short;]$(echo $(git rev-parse --short HEAD))"
+          ssh circleci@${{ secrets.BASTION_IP }} "echo \"##[set-output name=latest_build;]$(echo $(cat /tmp/latest_build))\""
         id: vars
       - name: accept bastion key
         run: |
@@ -30,4 +31,4 @@ jobs:
       # Runs the "deploy" command
       - name: Deploy air quotes
         run: |
-          ssh circleci@${{ secrets.BASTION_IP }} "echo \"Hello world, deployed tag ${{ steps.vars.outputs.sha_short }} to ${{ steps.vars.outputs.branch }}!\""
+          ssh circleci@${{ secrets.BASTION_IP }} "echo \"Hello world, deployed tag ${{ steps.vars.outputs.latest_build }} to ${{ steps.vars.outputs.branch }}!\""
