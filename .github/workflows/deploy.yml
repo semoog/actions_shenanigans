@@ -18,16 +18,19 @@ jobs:
       - uses: webfactory/ssh-agent@v0.5.1
         with:
           ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: accept bastion key
+        run: |
+          ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
       - name: Extract some variables
         shell: bash
         run: | 
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          echo "##[set-output name=sha_short;]$(echo $(git rev-parse --short HEAD))"
         id: vars
-      - name: accept bastion key
+      - name: Get latest tag
         run: |
-          ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
+          scp circleci@${{ secrets.BASTION_IP }}:/home/circleci/latest_build /home/runner/latest_build
+          cat /home/runner/latest_build
       # Runs the "deploy" command
       - name: Deploy air quotes
         run: |
-          ssh circleci@${{ secrets.BASTION_IP }} "echo \"Hello world, deployed tag ${{ steps.vars.outputs.sha_short }} to ${{ steps.vars.outputs.branch }}!\""
+          ssh circleci@${{ secrets.BASTION_IP }} "echo \"Hello world, deployed tag $(echo -n $(cat /home/runner/latest_build)) to ${{ steps.vars.outputs.branch }}!\""

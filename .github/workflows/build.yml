@@ -4,7 +4,7 @@ name: Build & Push to ECR
 # Controls when the action will run. 
 on:
   pull_request:
-    branches: [ sandbox, production ]
+    branches: [ sandbox ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -15,6 +15,12 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
+      - uses: webfactory/ssh-agent@v0.5.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+      - name: accept bastion key
+        run: |
+          ssh-keyscan ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
       # Retrieve the short SHA for the tag
       - name: Extract short sha
         shell: bash
@@ -30,42 +36,20 @@ jobs:
 #           builder: # optional
           # Build's context is the set of files located in the specified PATH or URL
           context: .
-          # Path to the Dockerfile
-#           file: # optional
-          # List of build-time variables
-#           build-args: # optional
-          # List of metadata for an image
-#           labels: # optional
           # List of tags
           tags: ${{ steps.vars.outputs.short_sha }}, latest
-          # Always attempt to pull a newer version of the image
-          # pull: # optional, default is false
-          # Sets the target stage to build
-          # target: # optional
-          # List of extra privileged entitlement (eg. network.host,security.insecure)
-          # allow: # optional
-          # Do not use cache when building the image
-          # no-cache: # optional, default is false
-          # List of target platforms for build
-          # platforms: # optional
-          # Load is a shorthand for --output=type=docker
-          # load: # optional, default is false
           # Push is a shorthand for --output=type=registry
           # push: # optional, default is false
-          # List of output destinations (format: type=local,dest=path)
-          # outputs: # optional
-          # List of external cache sources for buildx (eg. user/app:cache, type=local,src=path/to/dir)
-          # cache-from: # optional
-          # List of cache export destinations for buildx (eg. user/app:cache, type=local,dest=path/to/dir)
-          # cache-to: # optional
           # List of secrets to expose to the build (eg. key=string, GIT_AUTH_TOKEN=mytoken)
           # secrets: # optional
-          # List of secret files to expose to the build (eg. key=filename, MY_SECRET=./secret.txt)
-          # secret-files: # optional
           # List of SSH agent socket or keys to expose to the build
           # ssh: # optional
           # GitHub Token used to authenticate against a repository for Git context
           # github-token: # optional, default is ${{ github.token }}
+      # Set build tag on "salt"
+      - name: Set image tag master file
+        run: |
+          ssh circleci@${{ secrets.BASTION_IP }} "echo ${{ steps.vars.outputs.sha_short }} > ~/latest_build"
       # Runs a set of commands using the runners shell
       - name: Print out results
         run: |
