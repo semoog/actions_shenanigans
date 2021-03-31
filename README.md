@@ -1,3 +1,3 @@
 # actions_shenanigans
 
-Doing cool stuff with github actions. Man.
+Doing cool stuff with github actions, man.
